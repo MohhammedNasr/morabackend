@@ -1,0 +1,100 @@
+.language-switcher {
+    position: relative;
+}
+
+.language-switcher img {
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.language-switcher .dropdown-content {
+    min-width: 120px;
+}
+
+.language-switcher .dropdown-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s;
+}
+
+.language-switcher .dropdown-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* RTL specific styles */
+[dir="rtl"] .language-switcher img {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .language-switcher .dropdown-link {
+    flex-direction: row-reverse;
+}
+
+/* Language Switcher Styles */
+.kt-header__topbar-item--langs .kt-header__topbar-wrapper {
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.kt-header__topbar-item--langs .kt-header__topbar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kt-header__topbar-item--langs .kt-header__topbar-icon img {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.kt-header__topbar-item--langs .dropdown-menu {
+    min-width: 150px;
+    padding: 0;
+}
+
+.kt-header__topbar-item--langs .kt-nav__item {
+    padding: 0;
+}
+
+.kt-header__topbar-item--langs .kt-nav__link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: #595d6e;
+    transition: all 0.3s ease;
+}
+
+.kt-header__topbar-item--langs .kt-nav__link:hover {
+    background-color: #f4f5f8;
+    color: #3699ff;
+}
+
+.kt-header__topbar-item--langs .kt-nav__link-icon {
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.kt-header__topbar-item--langs .kt-nav__link-icon img {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* RTL Support */
+[dir="rtl"] .kt-header__topbar-item--langs .kt-nav__link-icon {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 1024px) {
+    .kt-header__topbar-item--langs .kt-header__topbar-wrapper {
+        padding: 0.25rem;
+    }
+
+    .kt-header__topbar-item--langs .kt-nav__link {
+        padding: 0.5rem 1rem;
+    }
+}

@@ -1,0 +1,98 @@
+<?php
+
+return [
+    // Dashboard
+    'dashboard' => 'لوحة التحكم',
+    'total_orders' => 'إجمالي الطلبات',
+    'pending_orders' => 'الطلبات المعلقة',
+    'approved_orders' => 'الطلبات المعتمدة',
+    'wallet_balance' => 'رصيد المحفظة',
+    'recent_orders' => 'الطلبات الأخيرة',
+    'upcoming_payments' => 'المدفوعات القادمة',
+    'recent_transactions' => 'المعاملات الأخيرة',
+    'top_products' => 'المنتجات الأكثر طلباً',
+    'select_date_range' => 'قم باختيار التاريخ',
+    'all_statuses' => 'كل الحالات',
+    // Orders
+    'orders' => 'الطلبات',
+    'order_details' => 'تفاصيل الطلب',
+    'new_order' => 'طلب جديد',
+    'order_id' => 'رقم الطلب',
+    'supplier' => 'المورد',
+    'status' => 'الحالة',
+    'total' => 'الإجمالي',
+    'due_date' => 'تاريخ الاستحقاق',
+    'created_at' => 'تاريخ الإنشاء',
+    'actions' => 'الإجراءات',
+    'view' => 'عرض',
+    'cancel' => 'إلغاء',
+    'cancel_order' => 'إلغاء الطلب',
+    'cancel_confirmation' => 'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟',
+    'order_cancelled' => 'تم إلغاء الطلب بنجاح.',
+    'order_created' => 'تم إنشاء الطلب بنجاح.',
+    'order_cannot_cancel' => 'لا يمكن إلغاء الطلب.',
+
+    // Order Status
+    'pending' => 'معلق',
+    'approved' => 'معتمد',
+    'rejected' => 'مرفوض',
+    'delivered' => 'تم التسليم',
+    'cancelled' => 'ملغي',
+
+    // Order Items
+    'order_items' => 'عناصر الطلب',
+    'product' => 'المنتج',
+    'quantity' => 'الكمية',
+    'unit_price' => 'سعر الوحدة',
+    'select_product' => 'اختر المنتج',
+    'add_item' => 'إضافة عنصر',
+    'remove' => 'حذف',
+    'create_order' => 'إنشاء الطلب',
+    'select_supplier' => 'اختر المورد',
+    'products_not_available' => 'منتج واحد أو أكثر غير متوفر.',
+    'credit_limit_exceeded' => 'مبلغ الطلب يتجاوز الحد الائتماني.',
+
+    // Supplier Information
+    'supplier_information' => 'معلومات المورد',
+    'rejection_reason' => 'سبب الرفض',
+
+    // Filters
+    'filter' => 'تصفية',
+    'all' => 'الكل',
+
+    // Wallet
+    'deposit' => 'إيداع',
+    'withdrawal' => 'سحب',
+
+    // Store Details
+    'store_details' => 'تفاصيل المتجر',
+    'import_products' => 'استيراد منتجات',
+    'back_to_stores' => 'رجوع للمتاجر',
+    'store_information' => 'معلومات المتجر',
+    'owner_information' => 'معلومات المالك',
+    'branches' => 'الفروع',
+    'name' => 'الاسم',
+    'description' => 'الوصف',
+    'address' => 'العنوان',
+    'phone' => 'الهاتف',
+    'email' => 'البريد الإلكتروني',
+    'commercial_registration' => 'السجل التجاري',
+    'tax_id' => 'الرقم الضريبي',
+    'created_at' => 'تاريخ الإنشاء',
+    'status' => 'الحالة',
+    'verified' => 'تم التحقق',
+    'last_login' => 'آخر تسجيل دخول',
+    'active' => 'نشط',
+    'inactive' => 'غير نشط',
+    'verified_status' => 'تم التحقق',
+    'unverified' => 'غير موثّق',
+    'no_owner_assigned' => 'لا يوجد مالك معين لهذا المتجر',
+    'no_branches_found' => 'لا توجد فروع لهذا المتجر',
+    'edit_store' => 'تعديل المتجر',
+    'store_type' => 'نوع المتجر',
+    'id_number' => 'رقم الهوية',
+    'credit_limit' => 'الحد الائتماني',
+    'hypermarket' => 'هايبر ماركت',
+    'supermarket' => 'سوبر ماركت',
+    'restaurant' => 'مطعم',
+];

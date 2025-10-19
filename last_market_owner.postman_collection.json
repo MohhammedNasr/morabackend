@@ -1,0 +1,101 @@
+{
+  "info": {
+    "name": "last_market_owner",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "item": [
+            {
+              "name": "Register Store",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n\t\"name\": \"Store Owner\",\n\t\"email\": \"store@example.com\",\n\t\"password\": \"password\",\n\t\"password_confirmation\": \"password\",\n\t\"phone\": \"+123456789\",\n\t\"store_name\": \"My Store\",\n\t\"tax_record\": \"TAX123\",\n\t\"commercial_record\": \"COM123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/register/store",
+                  "host": ["{{base_url}}"],
+                  "path": ["register","store"]
+                }
+              },
+              "response": [
+                {
+                  "name": "Success",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\t\"name\": \"Store Owner\",\n\t\"email\": \"store@example.com\",\n\t\"password\": \"password\",\n\t\"password_confirmation\": \"password\",\n\t\"phone\": \"+123456789\",\n\t\"store_name\": \"My Store\",\n\t\"tax_record\": \"TAX123\",\n\t\"commercial_record\": \"COM123\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/register/store",
+                      "host": ["{{base_url}}"],
+                      "path": ["register","store"]
+                    }
+                  },
+                  "code": 201,
+                  "body": "{\n\t\"message\": \"Registration successful. Please verify your store using the code sent to your phone.\",\n\t\"store_id\": 1\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stores",
+      "item": [
+        {
+          "name": "List Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/stores",
+              "host": ["{{base_url}}"],
+              "path": ["stores"],
+              "query": [
+                {"key": "search", "value": "store_name"},
+                {"key": "verified", "value": "true"}
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/stores",
+                  "host": ["{{base_url}}"],
+                  "path": ["stores"],
+                  "query": [
+                    {"key": "search", "value": "store_name"},
+                    {"key": "verified", "value": "true"}
+                  ]
+                }
+              },
+              "code": 200,
+              "body": "{\n\t\"data\": [\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Store Name\",\n\t\t\t\"email\": \"store@example.com\",\n\t\t\t\"phone\": \"+123456789\",\n\t\t\t\"is_verified\": true\n\t\t}\n\t]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    }
+  ]
+}

@@ -1,0 +1,479 @@
+{
+	"info": {
+		"_postman_id": "market-owner-collection",
+		"name": "Market Owner APIs",
+		"description": "Collection of all APIs available for market owners\n\nEnvironment Variables:\n- base_url: Your API base URL (e.g., http://localhost:8000)\n- token: Authentication token received after login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Registration",
+			"item": [
+				{
+					"name": "Register Store",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/register/store",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Store Name\",\n    \"email\": \"owner@store.com\",\n    \"phone\": \"+966500000000\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\",\n    \"id_number\": \"1234567890\",\n    \"tax_number\": \"300000000000003\",\n    \"type\": \"supermarket\",\n    \"credit_balance\": 10000,\n    \"branches_count\": 1,\n    \"branches\": [\n        {\n            \"name\": \"Main Branch\",\n            \"address\": \"Main Street\",\n            \"phone\": \"+966500000001\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Register a new store with branches"
+					}
+				},
+				{
+					"name": "Check Email",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/check/email",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"owner@store.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Check if email is available"
+					}
+				},
+				{
+					"name": "Check Phone",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/check/phone",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+966500000000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Check if phone is available"
+					}
+				},
+				{
+					"name": "Check Tax Number",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/check/tax-number",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tax_number\": \"300000000000003\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Check if tax number is available"
+					}
+				},
+				{
+					"name": "Check ID Number",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/check/id-number",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id_number\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Check if ID number is available"
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/login",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+966500000000\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Login with phone and password to get authentication token\n\nResponse:\n{\n    \"token\": \"auth-token-here\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"Owner Name\",\n        \"email\": \"owner@store.com\",\n        \"phone\": \"+966500000000\",\n        \"role\": \"store-owner\"\n    },\n    \"store\": {\n        \"id\": 1,\n        \"name\": \"Store Name\",\n        \"type\": \"supermarket\",\n        \"credit_balance\": 10000,\n        \"branches_count\": 2,\n        \"tax_number\": \"300000000000003\",\n        \"id_number\": \"1234567890\",\n        \"branches\": [\n            {\n                \"id\": 1,\n                \"name\": \"Main Branch\",\n                \"address\": \"Main Street\",\n                \"phone\": \"+966500000001\"\n            }\n        ]\n    }\n}"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/logout",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Logout and invalidate current token"
+					}
+				}
+			]
+		},
+		{
+			"name": "Phone Verification",
+			"item": [
+				{
+					"name": "Verify Phone",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/verify/phone",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"verification_code\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Verify phone number with SMS code"
+					}
+				},
+				{
+					"name": "Resend Verification Code",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/verify/phone/resend",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Request a new verification code"
+					}
+				}
+			]
+		},
+		{
+			"name": "Store Management",
+			"item": [
+				{
+					"name": "Get Store Details",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/stores/:store_id",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get store details including branches"
+					}
+				},
+				{
+					"name": "Update Store",
+					"request": {
+						"method": "PUT",
+						"url": "{{base_url}}/api/stores/:store_id",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Store Name\",\n    \"type\": \"supermarket\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Update store information"
+					}
+				},
+				{
+					"name": "Add Store Owner",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/stores/:store_id/owners",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Owner\",\n    \"email\": \"newowner@store.com\",\n    \"phone\": \"+966500000002\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Add additional owner to store"
+					}
+				}
+			]
+		},
+		{
+			"name": "Wallet",
+			"item": [
+				{
+					"name": "Get Balance",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/wallets/balance",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get current wallet balance"
+					}
+				},
+				{
+					"name": "Get Transactions",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/wallets/transactions",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get wallet transaction history"
+					}
+				},
+				{
+					"name": "Deposit",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/wallets/deposit",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Add funds to wallet"
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/categories",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get list of all categories with id, name, and image\n\nResponse:\n{\n    \"categories\": [\n        {\n            \"id\": 1,\n            \"name\": \"Category Name\",\n            \"image\": \"category-image.jpg\"\n        }\n    ]\n}"
+					}
+				},
+				{
+					"name": "Get Products by Categories",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/categories/products",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories\": [1, 2],\n    \"supplier_id\": 1,\n    \"search\": \"product name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Get products filtered by categories with optional supplier filter and search\n\nResponse:\n{\n    \"products\": [\n        {\n            \"id\": 1,\n            \"name\": \"Product Name\",\n            \"image\": \"product-image.jpg\",\n            \"price\": \"100.00\",\n            \"sku\": \"PRD001\",\n            \"available_quantity\": 50,\n            \"category_id\": 1,\n            \"activeSuppliers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"Supplier Name\"\n                }\n            ]\n        }\n    ]\n}"
+					}
+				},
+				{
+					"name": "Get Suppliers by Category",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/categories/:category_id/suppliers",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get suppliers that have products in the specified category\n\nResponse:\n{\n    \"category\": {\n        \"id\": 1,\n        \"name\": \"Category Name\"\n    },\n    \"suppliers\": [\n        {\n            \"id\": 1,\n            \"name\": \"Supplier Name\"\n        }\n    ]\n}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "List Orders",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/orders",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"query": [
+							{
+								"key": "type",
+								"value": "upcoming",
+								"description": "Filter by type: upcoming or historical"
+							},
+							{
+								"key": "status",
+								"value": "pending",
+								"description": "Filter by status: pending, approved, rejected, cancelled, delivered, completed"
+							}
+						],
+						"description": "Get list of orders with filters\n\nResponse:\n{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"reference_number\": \"ORD-ABC12345\",\n            \"status\": \"pending\",\n            \"total_amount\": \"1000.00\",\n            \"products_count\": 5,\n            \"suppliers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"Supplier Name\",\n                    \"items_count\": 3,\n                    \"total_amount\": \"600.00\"\n                }\n            ],\n            \"created_at\": \"2024-02-20T06:53:00.000000Z\"\n        }\n    ],\n    \"links\": {...},\n    \"meta\": {...}\n}"
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/orders",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"store_branch_id\": 1,\n    \"supplier_id\": 1,\n    \"items\": [\n        {\n            \"product_id\": 1,\n            \"quantity\": 5\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Create a new order"
+					}
+				},
+				{
+					"name": "Get Order Details",
+					"request": {
+						"method": "GET",
+						"url": "{{base_url}}/api/orders/:order_id",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"description": "Get detailed information about an order including sub-orders\n\nResponse:\n{\n    \"reference_number\": \"ORD-ABC12345\",\n    \"status\": \"pending\",\n    \"total_amount\": \"1000.00\",\n    \"products_count\": 5,\n    \"branch\": {\n        \"name\": \"Main Branch\",\n        \"address\": \"Main Street\",\n        \"phone\": \"+966500000001\"\n    },\n    \"suppliers\": [\n        {\n            \"id\": 1,\n            \"name\": \"Supplier Name\",\n            \"products_count\": 3,\n            \"status\": \"pending\",\n            \"total_amount\": \"600.00\",\n            \"items\": [\n                {\n                    \"id\": 1,\n                    \"product\": {\n                        \"id\": 1,\n                        \"name\": \"Product Name\",\n                        \"image\": \"product.jpg\",\n                        \"sku\": \"PRD001\"\n                    },\n                    \"quantity\": 2,\n                    \"unit_price\": \"100.00\",\n                    \"total_price\": \"200.00\"\n                }\n            ]\n        }\n    ],\n    \"created_at\": \"2024-02-20T06:53:00.000000Z\",\n    \"payment_due_date\": \"2024-03-20\",\n    \"requires_mora_approval\": false\n}"
+					}
+				},
+				{
+					"name": "Verify Order",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/orders/:order_id/verify",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"verification_code\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Verify order using SMS code"
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"url": "{{base_url}}/api/orders/:order_id/cancel",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cancellation_reason\": \"Items no longer needed\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Cancel a pending order"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "token",
+			"value": "your-auth-token-here"
+		}
+	]
+}

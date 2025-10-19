@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'العروض الترويجية',
+    'create_title' => 'إنشاء عرض ترويجي',
+    'name' => 'اسم العرض',
+    'description' => 'الوصف',
+    'start_date' => 'تاريخ البدء',
+    'end_date' => 'تاريخ الانتهاء',
+    'discount' => 'الخصم',
+    'discount_type' => 'نوع الخصم',
+    'percentage' => 'نسبة مئوية',
+    'fixed' => 'مبلغ ثابت',
+    'status' => 'الحالة',
+    'active' => 'نشط',
+    'inactive' => 'غير نشط',
+    'create_button' => 'إنشاء عرض',
+    'cancel_button' => 'إلغاء',
+    'success_message' => 'تم إنشاء العرض بنجاح',
+    'minimum_order' => 'الحد الأدنى لمبلغ الطلب',
+    'maximum_discount' => 'الحد الأقصى لمبلغ الخصم',
+    'usage_limit' => 'حد الاستخدام',
+    'dashboard' => 'لوحة التحكم',
+    'admin' => 'المشرف',
+    'promotions' => 'العروض الترويجية',
+];

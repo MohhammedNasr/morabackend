@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Primary button styles */
+.btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition-colors;
+}
+
+/* Secondary button styles */
+.btn-secondary {
+    @apply bg-secondary text-primary border border-primary px-4 py-2 rounded hover:bg-opacity-90 transition-colors;
+}
+
+/* Links */
+a {
+    @apply text-primary hover:text-opacity-90;
+}
+
+/* Headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply text-primary;
+}
+
+/* Form inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    @apply border-primary focus:ring-primary focus:border-primary;
+}
+
+/* Navigation */
+.nav-link {
+    @apply text-primary hover:bg-primary hover:text-white px-3 py-2 rounded transition-colors;
+}
+
+/* Active navigation */
+.nav-link.active {
+    @apply bg-primary text-white;
+}
+
+/* Cards */
+.card {
+    @apply bg-white border border-primary/20 rounded shadow;
+}
+
+.card-header {
+    @apply bg-primary text-white p-4 rounded-t;
+}
+
+.card-body {
+    @apply p-4;
+}

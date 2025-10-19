@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Promotions',
+    'create_title' => 'Create Promotion',
+    'name' => 'Promotion Name',
+    'description' => 'Description',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'discount' => 'Discount',
+    'discount_type' => 'Discount Type',
+    'percentage' => 'Percentage',
+    'fixed' => 'Fixed Amount',
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'create_button' => 'Create Promotion',
+    'cancel_button' => 'Cancel',
+    'success_message' => 'Promotion created successfully',
+    'minimum_order' => 'Minimum Order Amount',
+    'maximum_discount' => 'Maximum Discount Amount', 
+    'usage_limit' => 'Usage Limit',
+    'dashboard' => 'Dashboard',
+    'admin' => 'Admin',
+    'promotions' => 'Promotions',
+];

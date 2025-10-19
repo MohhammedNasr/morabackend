@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::table('suppliers', function (Blueprint $table) {
+            $table->boolean('is_verified')->default(false)->after('website');
+            $table->timestamp('verified_at')->nullable()->after('is_verified');
+            $table->string('verification_code', 6)->nullable()->after('verified_at');
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('suppliers', function (Blueprint $table) {
+            $table->dropColumn(['is_verified', 'verified_at', 'verification_code']);
+        });
+    }
+};
