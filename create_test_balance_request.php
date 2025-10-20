@@ -9,32 +9,66 @@ $kernel->bootstrap();
 $storeBranch = \App\Models\StoreBranch::first();
 
 if (!$storeBranch) {
-    echo "No store branches found. Creating a test store and branch...\n";
+    echo "No store branches found. Looking for existing test store or creating new one...\n";
     
-    // Create a test store
-    $store = \App\Models\Store::create([
-        'name' => 'Test Store',
-        'email' => 'teststore@example.com',
-        'phone' => '966500000001',
-        'address' => 'Test Address',
-        'city_id' => 1,
-        'store_type_id' => 1,
-        'tax_record' => '1234567890',
-        'commercial_record' => '9876543210',
-        'is_active' => true,
-        'is_verified' => true,
-    ]);
+    // Find or create a store owner user
+    $storeOwnerRole = \App\Models\Role::where('slug', 'store-owner')->first();
+    if (!$storeOwnerRole) {
+        echo "Store owner role not found!\n";
+        exit(1);
+    }
+    
+    $owner = \App\Models\User::where('role_id', $storeOwnerRole->id)->first();
+    if (!$owner) {
+        echo "Creating a test store owner user...\n";
+        $owner = \App\Models\User::create([
+            'name' => 'Test Store Owner',
+            'email' => 'teststoreowner@example.com',
+            'phone' => '966500000099',
+            'password' => bcrypt('password123'),
+            'role_id' => $storeOwnerRole->id,
+            'is_active' => true,
+            'phone_verified_at' => now(),
+        ]);
+    }
+    
+    // Find or create a test store
+    $store = \App\Models\Store::where('email', 'teststore@example.com')->first();
+    if (!$store) {
+        echo "Creating a test store...\n";
+        $store = \App\Models\Store::create([
+            'owner_id' => $owner->id,
+            'name' => 'Test Store',
+            'email' => 'teststore@example.com',
+            'phone' => '966500000001',
+            'address' => 'Test Address',
+            'city_id' => 1,
+            'store_type_id' => 1,
+            'tax_record' => '1234567890',
+            'commercial_record' => '9876543210',
+            'is_active' => true,
+            'is_verified' => true,
+        ]);
+    } else {
+        echo "Found existing test store.\n";
+    }
     
     // Create a test branch
+    echo "Creating a test branch...\n";
     $storeBranch = \App\Models\StoreBranch::create([
         'store_id' => $store->id,
         'name' => 'Main Branch',
         'address' => 'Main Branch Address',
+        'street_name' => 'Main Street',
+        'building_number' => '123',
+        'city_id' => 1,
         'phone' => '966500000002',
+        'latitude' => 24.7136,
+        'longitude' => 46.6753,
         'is_active' => true,
     ]);
     
-    echo "Created test store and branch.\n";
+    echo "Created test branch.\n";
 }
 
 // Create a balance request
