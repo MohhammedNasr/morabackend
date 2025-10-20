@@ -22,6 +22,8 @@ class BranchBalanceRequestController extends Controller
     public function index(Request $request)
     {
         try {
+            \Log::info('Balance requests endpoint called by user: ' . auth()->id());
+            
             $requests = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -39,11 +41,17 @@ class BranchBalanceRequestController extends Controller
                     ];
                 });
 
+            \Log::info('Balance requests count: ' . $requests->count());
+            
             return response()->json($requests);
         } catch (\Exception $e) {
+            \Log::error('Balance requests error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'error' => 'Failed to fetch balance requests',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'trace' => config('app.debug') ? $e->getTraceAsString() : null
             ], 500);
         }
     }
