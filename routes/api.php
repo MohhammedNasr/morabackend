@@ -107,10 +107,11 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 
                 // Representatives
                 Route::post('/representatives/datatable', [\App\Http\Controllers\Admin\RepresentativeController::class, 'datatable']);
-                Route::get('/representatives/{id}/json', [\App\Http\Controllers\Admin\RepresentativeController::class, 'show']);
+                Route::get('/representatives/{representative}/json', [\App\Http\Controllers\Admin\RepresentativeController::class, 'show']);
+                Route::get('/representatives/{representative}/edit', [\App\Http\Controllers\Admin\RepresentativeController::class, 'edit']);
                 Route::post('/representatives', [\App\Http\Controllers\Admin\RepresentativeController::class, 'store']);
-                Route::post('/representatives/{id}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'update']);
-                Route::delete('/representatives/{id}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'destroy']);
+                Route::put('/representatives/{representative}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'update']);
+                Route::delete('/representatives/{representative}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'destroy']);
                 Route::post('/representatives/{id}/toggle-status', [\App\Http\Controllers\Admin\RepresentativeController::class, 'toggleStatus']);
             });
         });
