@@ -13,5 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'api/*', // Exclude API routes from CSRF protection since we're using tokens
+        'admin/*', // Exclude admin routes to allow Bearer token authentication from dashboard
     ];
 }
