@@ -16,7 +16,7 @@
 ---
 
 ## 🔐 Authentication
-
+sadsadasd
 All authenticated endpoints require Bearer token in header:
 ```
 Authorization: Bearer {token}
