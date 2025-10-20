@@ -97,7 +97,11 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::post('/suppliers/datatable', [\App\Http\Controllers\Admin\SupplierController::class, 'datatable']);
                 Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index']);
                 Route::get('/suppliers/list', [\App\Http\Controllers\Admin\SupplierController::class, 'list']);
-                Route::get('/suppliers/{id}/json', [\App\Http\Controllers\Admin\SupplierController::class, 'show']);
+                Route::get('/suppliers/{supplier}/json', [\App\Http\Controllers\Admin\SupplierController::class, 'show']);
+                Route::get('/suppliers/{supplier}/edit', [\App\Http\Controllers\Admin\SupplierController::class, 'edit']);
+                Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store']);
+                Route::post('/suppliers/{supplier}', [\App\Http\Controllers\Admin\SupplierController::class, 'update']);
+                Route::delete('/suppliers/{supplier}', [\App\Http\Controllers\Admin\SupplierController::class, 'destroy']);
                 Route::post('/suppliers/{id}/toggle-status', [\App\Http\Controllers\Admin\SupplierController::class, 'toggleStatus']);
                 Route::post('/suppliers/{id}/verify', [\App\Http\Controllers\Admin\SupplierController::class, 'verify']);
                 

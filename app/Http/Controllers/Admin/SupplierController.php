@@ -50,6 +50,7 @@ class SupplierController extends Controller
             'bank_account' => 'nullable|string|max:100',
             'website' => 'nullable|url|max:255',
             'address' => 'required|string|max:500',
+            'is_active' => 'nullable|boolean',
         ]);
 
         try {
@@ -67,7 +68,7 @@ class SupplierController extends Controller
                 'bank_account' => $request->bank_account,
                 'website' => $request->website,
                 'address' => $request->address,
-                'is_active' => 1,
+                'is_active' => $request->is_active ?? 1,
                 'role_id' => 3,
             ]);
 
@@ -128,11 +129,11 @@ class SupplierController extends Controller
 
         try {
             DB::beginTransaction();
-            $supplier->update([
+            
+            $updateData = [
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
                 'commercial_record' => $request->commercial_record,
                 'payment_term_days' => $request->payment_term_days,
                 'contact_name' => $request->contact_name,
@@ -140,9 +141,15 @@ class SupplierController extends Controller
                 'bank_account' => $request->bank_account,
                 'website' => $request->website,
                 'address' => $request->address,
-                'is_active' => 1,
-                'role_id' => 3,
-            ]);
+                'is_active' => $request->is_active,
+            ];
+            
+            // Only update password if provided
+            if ($request->filled('password')) {
+                $updateData['password'] = Hash::make($request->password);
+            }
+            
+            $supplier->update($updateData);
 
             DB::commit();
 
