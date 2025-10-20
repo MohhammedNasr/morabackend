@@ -70,6 +70,44 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
             Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/me', [\App\Http\Controllers\API\Auth\AdminAuthController::class, 'me']);
                 Route::post('/logout', [\App\Http\Controllers\API\Auth\AdminAuthController::class, 'logout']);
+                
+                // Admin Dashboard API Routes
+                Route::get('/analytics', [\App\Http\Controllers\Admin\DashboardController::class, 'analytics']);
+                
+                // Users/Admins Management
+                Route::post('/users/datatable', [\App\Http\Controllers\Admin\UserController::class, 'datatable']);
+                Route::get('/users/{id}/json', [\App\Http\Controllers\Admin\UserController::class, 'show']);
+                Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store']);
+                Route::post('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'update']);
+                Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy']);
+                
+                // Balance Requests
+                Route::get('/balance-requests', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'index']);
+                Route::get('/balance-requests/{id}', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'show']);
+                Route::post('/balance-requests/{id}/approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'approve']);
+                Route::post('/balance-requests/{id}/reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'reject']);
+                
+                // Stores
+                Route::post('/stores/datatable', [\App\Http\Controllers\Admin\StoreController::class, 'datatable']);
+                Route::get('/stores/{id}/json', [\App\Http\Controllers\Admin\StoreController::class, 'show']);
+                Route::post('/stores/{id}/toggle-status', [\App\Http\Controllers\Admin\StoreController::class, 'toggleStatus']);
+                Route::post('/stores/{id}/verify', [\App\Http\Controllers\Admin\StoreController::class, 'verify']);
+                
+                // Suppliers
+                Route::post('/suppliers/datatable', [\App\Http\Controllers\Admin\SupplierController::class, 'datatable']);
+                Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index']);
+                Route::get('/suppliers/list', [\App\Http\Controllers\Admin\SupplierController::class, 'list']);
+                Route::get('/suppliers/{id}/json', [\App\Http\Controllers\Admin\SupplierController::class, 'show']);
+                Route::post('/suppliers/{id}/toggle-status', [\App\Http\Controllers\Admin\SupplierController::class, 'toggleStatus']);
+                Route::post('/suppliers/{id}/verify', [\App\Http\Controllers\Admin\SupplierController::class, 'verify']);
+                
+                // Representatives
+                Route::post('/representatives/datatable', [\App\Http\Controllers\Admin\RepresentativeController::class, 'datatable']);
+                Route::get('/representatives/{id}/json', [\App\Http\Controllers\Admin\RepresentativeController::class, 'show']);
+                Route::post('/representatives', [\App\Http\Controllers\Admin\RepresentativeController::class, 'store']);
+                Route::post('/representatives/{id}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'update']);
+                Route::delete('/representatives/{id}', [\App\Http\Controllers\Admin\RepresentativeController::class, 'destroy']);
+                Route::post('/representatives/{id}/toggle-status', [\App\Http\Controllers\Admin\RepresentativeController::class, 'toggleStatus']);
             });
         });
 
