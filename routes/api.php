@@ -89,9 +89,15 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 
                 // Stores
                 Route::post('/stores/datatable', [\App\Http\Controllers\Admin\StoreController::class, 'datatable']);
+                Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show']);
                 Route::get('/stores/{id}/json', [\App\Http\Controllers\Admin\StoreController::class, 'show']);
                 Route::post('/stores/{id}/toggle-status', [\App\Http\Controllers\Admin\StoreController::class, 'toggleStatus']);
                 Route::post('/stores/{id}/verify', [\App\Http\Controllers\Admin\StoreController::class, 'verify']);
+                
+                // Store Branches
+                Route::post('/stores/{store}/branches/datatable', [\App\Http\Controllers\Admin\StoreBranchController::class, 'datatable']);
+                Route::put('/store-branches/{branch}/balance-limit', [\App\Http\Controllers\Admin\StoreBranchController::class, 'updateBalanceLimit']);
+                Route::put('/store-branches/{branch}/toggle-status', [\App\Http\Controllers\Admin\StoreBranchController::class, 'toggleStatus']);
                 
                 // Suppliers
                 Route::post('/suppliers/datatable', [\App\Http\Controllers\Admin\SupplierController::class, 'datatable']);
