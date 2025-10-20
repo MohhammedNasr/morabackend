@@ -76,10 +76,10 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 
                 // Users/Admins Management
                 Route::post('/users/datatable', [\App\Http\Controllers\Admin\UserController::class, 'datatable']);
-                Route::get('/users/{id}/json', [\App\Http\Controllers\Admin\UserController::class, 'show']);
+                Route::get('/users/{user}/json', [\App\Http\Controllers\Admin\UserController::class, 'show']);
                 Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store']);
-                Route::post('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'update']);
-                Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy']);
+                Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update']);
+                Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy']);
                 
                 // Balance Requests
                 Route::get('/balance-requests', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'index']);

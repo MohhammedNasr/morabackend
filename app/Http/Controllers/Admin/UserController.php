@@ -79,6 +79,14 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load(['role', 'stores']);
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        }
+        
         return view('admin.users.show', compact('user'));
     }
 
@@ -152,6 +160,14 @@ class UserController extends Controller
         }
 
         $user->update($userData);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Admin user updated successfully.',
+                'data' => $user->fresh()
+            ]);
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'Admin user updated successfully.');
     }
