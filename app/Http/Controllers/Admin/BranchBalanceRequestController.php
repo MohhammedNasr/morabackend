@@ -12,7 +12,8 @@ class BranchBalanceRequestController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('admin');
+        // Middleware is handled by routes (auth:sanctum for API, admin for web)
+        // $this->middleware('admin');
     }
 
     /**
