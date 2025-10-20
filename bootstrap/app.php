@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->group('api', [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // Removed EnsureFrontendRequestsAreStateful to allow token-based API auth without CSRF
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':60,1',
         ]);
 
