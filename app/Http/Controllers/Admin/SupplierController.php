@@ -42,7 +42,7 @@ class SupplierController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed:confirm_password', Password::defaults()],
-            'phone' => 'required|string|max:20|regex:/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/',
+            'phone' => ['required', 'string', 'max:20', 'regex:/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/'],
             'commercial_record' => 'required|string|unique:suppliers',
             'payment_term_days' => 'required|integer|min:1|max:365',
             'contact_name' => 'required|string|max:255',
@@ -115,7 +115,7 @@ class SupplierController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $supplier->user_id,
-            'phone' => 'required|string|max:20|regex:/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/',
+            'phone' => ['required', 'string', 'max:20', 'regex:/^(009665|9665|\+9665|05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/'],
             'commercial_record' => 'required|string|unique:suppliers,commercial_record,' . $supplier->id,
             'payment_term_days' => 'required|integer|min:1|max:365',
             'contact_name' => 'required|string|max:255',
