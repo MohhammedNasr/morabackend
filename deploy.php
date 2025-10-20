@@ -4,7 +4,7 @@ define('WEBHOOK_SECRET', 'mora-deploy-secret-xyz123');
 
 // Catch all errors
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    $logFile = '/home/xhqmpsycgulf/deploy-error.log';
+    $logFile = '/home3/xcgulfco/deploy-error.log';
     $error = date('Y-m-d H:i:s') . " ERROR: $errstr in $errfile:$errline\n";
     file_put_contents($logFile, $error, FILE_APPEND);
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
@@ -27,14 +27,14 @@ try {
         }
     }
 } catch (Exception $e) {
-    $logFile = '/home/xhqmpsycgulf/deploy-error.log';
+    $logFile = '/home3/xcgulfco/deploy-error.log';
     file_put_contents($logFile, date('Y-m-d H:i:s') . " EXCEPTION: " . $e->getMessage() . "\n", FILE_APPEND);
     http_response_code(500);
     die("Error: " . $e->getMessage());
 }
 
-$project = '/home/xhqmpsycgulf/morabackend';
-$logFile = '/home/xhqmpsycgulf/deploy.log';
+$project = '/home3/xcgulfco/morabackend';
+$logFile = '/home3/xcgulfco/deploy.log';
 
 // Basic error handling
 ini_set('display_errors', 1);
@@ -54,7 +54,7 @@ $commands = [
     "cd $project && git reset --hard origin/main 2>&1",
     "cd $project && git clean -fd -e public/deploy.php 2>&1", // Remove untracked files except deploy.php
     "cd $project && cp deploy.php public/deploy.php 2>&1", // Ensure deploy.php is in public
-    "cd $project && HOME=/home/xhqmpsycgulf COMPOSER_HOME=/home/xhqmpsycgulf/.composer composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
+    "cd $project && HOME=/home3/xcgulfco COMPOSER_HOME=/home3/xcgulfco/.composer composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
     "cd $project && php artisan migrate --force 2>&1",
     // Clear caches first
     "cd $project && php artisan config:clear 2>&1",
