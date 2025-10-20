@@ -66,15 +66,14 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
         // Admin authentication (for dashboard)
         Route::prefix('admin')->group(function () {
             Route::post('/login', [\App\Http\Controllers\API\Auth\AdminAuthController::class, 'login']);
-        });
-
-        Route::middleware('auth:sanctum')->group(function () {
-            // Admin API authentication routes
-            Route::prefix('auth/admin')->group(function () {
+            
+            Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/me', [\App\Http\Controllers\API\Auth\AdminAuthController::class, 'me']);
                 Route::post('/logout', [\App\Http\Controllers\API\Auth\AdminAuthController::class, 'logout']);
             });
-            
+        });
+
+        Route::middleware('auth:sanctum')->group(function () {
             // Regular auth routes
             Route::post('logout', [\App\Http\Controllers\API\Auth\LoginController::class, 'logout']);
             Route::get('user', [AuthController::class, 'me']);
