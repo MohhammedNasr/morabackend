@@ -21,24 +21,31 @@ class BranchBalanceRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $requests = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function($req) {
-                return [
-                    'id' => $req->id,
-                    'branch_name' => $req->storeBranch->name,
-                    'store_name' => $req->storeBranch->store->name ?? null,
-                    'requested_balance_limit' => (float) $req->requested_balance_limit,
-                    'status' => $req->status,
-                    'approved_balance_limit' => $req->approved_balance_limit ? (float) $req->approved_balance_limit : null,
-                    'rejection_reason' => $req->rejection_reason,
-                    'created_at' => $req->created_at?->format('Y-m-d H:i:s'),
-                    'reviewed_at' => $req->reviewed_at?->format('Y-m-d H:i:s'),
-                ];
-            });
+        try {
+            $requests = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function($req) {
+                    return [
+                        'id' => $req->id,
+                        'branch_name' => $req->storeBranch?->name ?? 'N/A',
+                        'store_name' => $req->storeBranch?->store?->name ?? 'N/A',
+                        'requested_balance_limit' => (float) $req->requested_balance_limit,
+                        'status' => $req->status,
+                        'approved_balance_limit' => $req->approved_balance_limit ? (float) $req->approved_balance_limit : null,
+                        'rejection_reason' => $req->rejection_reason,
+                        'created_at' => $req->created_at?->format('Y-m-d H:i:s'),
+                        'reviewed_at' => $req->reviewed_at?->format('Y-m-d H:i:s'),
+                    ];
+                });
 
-        return response()->json($requests);
+            return response()->json($requests);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch balance requests',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -46,43 +53,50 @@ class BranchBalanceRequestController extends Controller
      */
     public function show($id)
     {
-        $request = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
-            ->findOrFail($id);
+        try {
+            $request = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
+                ->findOrFail($id);
 
-        return response()->json([
-            'id' => $request->id,
-            'branch' => [
-                'id' => $request->storeBranch->id,
-                'name' => $request->storeBranch->name,
-            ],
-            'store' => [
-                'id' => $request->storeBranch->store->id,
-                'name' => $request->storeBranch->store->name,
-            ],
-            'requested_balance_limit' => (float) $request->requested_balance_limit,
-            'business_type' => $request->business_type,
-            'years_in_business' => $request->years_in_business,
-            'average_monthly_revenue' => $request->average_monthly_revenue ? (float) $request->average_monthly_revenue : null,
-            'number_of_employees' => $request->number_of_employees,
-            'business_description' => $request->business_description,
-            'tax_registration_number' => $request->tax_registration_number,
-            'commercial_registration_number' => $request->commercial_registration_number,
-            'bank_account_number' => $request->bank_account_number,
-            'bank_name' => $request->bank_name,
-            'iban' => $request->iban,
-            'contact_person_name' => $request->contact_person_name,
-            'contact_person_phone' => $request->contact_person_phone,
-            'contact_person_email' => $request->contact_person_email,
-            'contact_person_position' => $request->contact_person_position,
-            'documents' => $request->documents,
-            'status' => $request->status,
-            'admin_notes' => $request->admin_notes,
-            'rejection_reason' => $request->rejection_reason,
-            'approved_balance_limit' => $request->approved_balance_limit ? (float) $request->approved_balance_limit : null,
-            'reviewed_by' => $request->reviewer ? $request->reviewer->name : null,
-            'reviewed_at' => $request->reviewed_at?->format('Y-m-d H:i:s'),
-            'created_at' => $request->created_at?->format('Y-m-d H:i:s'),
-        ]);
+            return response()->json([
+                'id' => $request->id,
+                'branch' => [
+                    'id' => $request->storeBranch?->id ?? null,
+                    'name' => $request->storeBranch?->name ?? 'N/A',
+                ],
+                'store' => [
+                    'id' => $request->storeBranch?->store?->id ?? null,
+                    'name' => $request->storeBranch?->store?->name ?? 'N/A',
+                ],
+                'requested_balance_limit' => (float) $request->requested_balance_limit,
+                'business_type' => $request->business_type,
+                'years_in_business' => $request->years_in_business,
+                'average_monthly_revenue' => $request->average_monthly_revenue ? (float) $request->average_monthly_revenue : null,
+                'number_of_employees' => $request->number_of_employees,
+                'business_description' => $request->business_description,
+                'tax_registration_number' => $request->tax_registration_number,
+                'commercial_registration_number' => $request->commercial_registration_number,
+                'bank_account_number' => $request->bank_account_number,
+                'bank_name' => $request->bank_name,
+                'iban' => $request->iban,
+                'contact_person_name' => $request->contact_person_name,
+                'contact_person_phone' => $request->contact_person_phone,
+                'contact_person_email' => $request->contact_person_email,
+                'contact_person_position' => $request->contact_person_position,
+                'documents' => $request->documents,
+                'status' => $request->status,
+                'admin_notes' => $request->admin_notes,
+                'rejection_reason' => $request->rejection_reason,
+                'approved_balance_limit' => $request->approved_balance_limit ? (float) $request->approved_balance_limit : null,
+                'reviewed_by' => $request->reviewer ? $request->reviewer->name : null,
+                'reviewed_at' => $request->reviewed_at?->format('Y-m-d H:i:s'),
+                'created_at' => $request->created_at?->format('Y-m-d H:i:s'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch balance request',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
