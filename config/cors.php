@@ -1,22 +1,17 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'admin/*', 'sanctum/csrf-cookie'],
+    'paths' => ['*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'https://localhost:3000',
-        env('FRONTEND_URL', 'http://localhost:3000'),
-    ],
+    'allowed_origins' => ['http://localhost:3000'],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'Accept', 'Origin', 'X-CSRF-TOKEN', 'X-Requested-With'],
+    'allowed_headers' => ['*'],
 
-    'exposed_headers' => ['Authorization'],
+    'exposed_headers' => [],
 
     'max_age' => 0,
 
