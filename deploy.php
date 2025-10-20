@@ -49,7 +49,10 @@ if (!is_dir($project)) {
 }
 
 $commands = [
-    "cd $project && git pull origin main 2>&1",
+    // Reset to match remote exactly (discard any local changes)
+    "cd $project && git fetch origin main 2>&1",
+    "cd $project && git reset --hard origin/main 2>&1",
+    "cd $project && git clean -fd 2>&1", // Remove untracked files
     "cd $project && composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
     "cd $project && php artisan migrate --force 2>&1",
     // Clear caches first
