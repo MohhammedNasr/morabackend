@@ -18,21 +18,20 @@ if ($signature) {
     }
 }
 
-$project = '/home/xcgulfco/morabackend';
+$project = '/home3/xcgulfco/morabackend';
 $commands = [
-    "cd $project 2>&1",
-    "git pull origin main 2>&1",
-    "composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
-    "php artisan migrate --force 2>&1",
+    "cd $project && git pull origin main 2>&1",
+    "cd $project && composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
+    "cd $project && php artisan migrate --force 2>&1",
     // Clear caches first
-    "php artisan config:clear 2>&1",
-    "php artisan route:clear 2>&1",
-    "php artisan cache:clear 2>&1",
-    "php artisan view:clear 2>&1",
+    "cd $project && php artisan config:clear 2>&1",
+    "cd $project && php artisan route:clear 2>&1",
+    "cd $project && php artisan cache:clear 2>&1",
+    "cd $project && php artisan view:clear 2>&1",
     // Then cache
-    "php artisan config:cache 2>&1",
-    "php artisan route:cache 2>&1",
-    "php artisan view:cache 2>&1",
+    "cd $project && php artisan config:cache 2>&1",
+    "cd $project && php artisan route:cache 2>&1",
+    "cd $project && php artisan view:cache 2>&1",
 ];
 
 $output = [date('Y-m-d H:i:s') . ' - Deploy Started'];
