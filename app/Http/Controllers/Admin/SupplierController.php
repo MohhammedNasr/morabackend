@@ -171,14 +171,20 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier)
     {
-        if ($supplier->orders()->exists()) {
+        if ($supplier->subOrders()->exists()) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete supplier with existing orders.'
+                ], 422);
+            }
             return back()->with('error', 'Cannot delete supplier with existing orders.');
         }
 
         try {
             DB::beginTransaction();
 
-            $supplier->products()->detach();
+            $supplier->products()->delete();
             $supplier->delete();
 
             DB::commit();

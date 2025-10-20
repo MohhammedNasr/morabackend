@@ -63,9 +63,21 @@ class Supplier extends Authenticatable
         return $this->hasMany(Product::class);
     }
 
-    public function orders(): HasMany
+    public function subOrders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(SubOrder::class);
+    }
+    
+    public function orders()
+    {
+        return $this->hasManyThrough(
+            Order::class,
+            SubOrder::class,
+            'supplier_id',
+            'id',
+            'id',
+            'order_id'
+        );
     }
 
     public function activeProducts(): BelongsToMany

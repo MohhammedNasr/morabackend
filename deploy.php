@@ -19,6 +19,8 @@ if ($signature) {
 }
 
 $project = '/home3/xcgulfco/morabackend';
+$logFile = '/home3/xcgulfco/deploy.log';
+
 $commands = [
     "cd $project && git pull origin main 2>&1",
     "cd $project && composer install --no-dev --optimize-autoloader --no-interaction 2>&1",
@@ -34,13 +36,38 @@ $commands = [
     "cd $project && php artisan view:cache 2>&1",
 ];
 
-$output = [date('Y-m-d H:i:s') . ' - Deploy Started'];
-foreach ($commands as $cmd) {
-    exec($cmd, $out);
-    $output = array_merge($output, $out);
-}
-$output[] = 'Deploy Complete';
+$output = [
+    '===========================================',
+    date('Y-m-d H:i:s') . ' - Deploy Started',
+    '==========================================='
+];
 
-file_put_contents('/home/xcgulfco/deploy.log', implode("\n", $output) . "\n\n", FILE_APPEND);
-echo "<pre>" . implode("\n", $output) . "</pre>";
+$failed = false;
+foreach ($commands as $index => $cmd) {
+    $output[] = "\n[Command " . ($index + 1) . "]: $cmd";
+    $out = [];
+    $returnCode = 0;
+    exec($cmd, $out, $returnCode);
+    
+    $output = array_merge($output, $out);
+    
+    if ($returnCode !== 0) {
+        $output[] = "ERROR: Command failed with return code $returnCode";
+        $failed = true;
+        break; // Stop on first failure
+    } else {
+        $output[] = "✓ Success";
+    }
+}
+
+if ($failed) {
+    $output[] = "\n❌ Deploy FAILED";
+    http_response_code(500);
+} else {
+    $output[] = "\n✅ Deploy Complete Successfully";
+}
+
+$logContent = implode("\n", $output) . "\n\n";
+file_put_contents($logFile, $logContent, FILE_APPEND);
+echo "<pre>" . $logContent . "</pre>";
 ?>
