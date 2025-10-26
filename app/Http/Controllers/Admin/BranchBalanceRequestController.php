@@ -172,4 +172,24 @@ class BranchBalanceRequestController extends Controller
             'data' => $balanceRequest,
         ]);
     }
+
+    /**
+     * Get count of pending balance requests
+     */
+    public function pendingCount()
+    {
+        try {
+            $count = BranchBalanceRequest::where('status', 'pending')->count();
+            
+            return response()->json([
+                'count' => $count
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to get pending balance requests count: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to fetch pending count',
+                'count' => 0
+            ], 500);
+        }
+    }
 }

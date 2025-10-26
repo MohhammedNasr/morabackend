@@ -83,6 +83,7 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 
                 // Balance Requests
                 Route::get('/balance-requests', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'index']);
+                Route::get('/balance-requests/pending-count', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'pendingCount']);
                 Route::get('/balance-requests/{id}', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'show']);
                 Route::post('/balance-requests/{id}/approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'approve']);
                 Route::post('/balance-requests/{id}/reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'reject']);
