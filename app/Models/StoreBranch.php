@@ -30,6 +30,14 @@ class StoreBranch extends Model
         'balance_limit'
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_main' => 'boolean',
+        'balance_limit' => 'decimal:2',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+    ];
+
     public function store()
     {
         return $this->belongsTo(Store::class);
