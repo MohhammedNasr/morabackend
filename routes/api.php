@@ -329,6 +329,12 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
         Route::get('/settlements', [\App\Http\Controllers\Supplier\SettlementController::class, 'index']);
         Route::get('/settlements/{id}', [\App\Http\Controllers\Supplier\SettlementController::class, 'show']);
         
+        // Payment Requests
+        Route::get('/payment-requests', [\App\Http\Controllers\Supplier\PaymentRequestController::class, 'index']);
+        Route::post('/payment-requests', [\App\Http\Controllers\Supplier\PaymentRequestController::class, 'store']);
+        Route::get('/payment-requests/{id}', [\App\Http\Controllers\Supplier\PaymentRequestController::class, 'show']);
+        Route::post('/payment-requests/{id}/cancel', [\App\Http\Controllers\Supplier\PaymentRequestController::class, 'cancel']);
+        
         // Profile
         Route::put('/profile', [\App\Http\Controllers\Supplier\ProfileController::class, 'updateProfile']);
         Route::post('/profile/change-password', [\App\Http\Controllers\Supplier\ProfileController::class, 'changePassword']);
