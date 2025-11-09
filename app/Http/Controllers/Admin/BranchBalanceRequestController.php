@@ -192,4 +192,157 @@ class BranchBalanceRequestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Employee approve a balance request (first level approval)
+     */
+    public function employeeApprove(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'comment' => 'required|string|min:3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $balanceRequest = BranchBalanceRequest::where('status', 'pending')->findOrFail($id);
+
+        $balanceRequest->update([
+            'status' => 'employee_review',
+            'employee_status' => 'approved',
+            'employee_comment' => $request->comment,
+            'employee_reviewed_by' => auth()->id(),
+            'employee_reviewed_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Balance request approved by employee. Moving to manager review.',
+            'data' => $balanceRequest,
+        ]);
+    }
+
+    /**
+     * Employee reject a balance request (first level rejection)
+     */
+    public function employeeReject(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'comment' => 'required|string|min:3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $balanceRequest = BranchBalanceRequest::where('status', 'pending')->findOrFail($id);
+
+        $balanceRequest->update([
+            'status' => 'rejected',
+            'employee_status' => 'rejected',
+            'employee_comment' => $request->comment,
+            'employee_reviewed_by' => auth()->id(),
+            'employee_reviewed_at' => now(),
+            'rejection_reason' => $request->comment,
+        ]);
+
+        return response()->json([
+            'message' => 'Balance request rejected by employee',
+            'data' => $balanceRequest,
+        ]);
+    }
+
+    /**
+     * Get balance requests for manager review
+     */
+    public function managerIndex()
+    {
+        try {
+            $requests = BranchBalanceRequest::with(['storeBranch.store', 'employeeReviewer', 'managerReviewer'])
+                ->where('status', 'employee_review')
+                ->orderBy('employee_reviewed_at', 'desc')
+                ->get()
+                ->map(function($req) {
+                    return [
+                        'id' => $req->id,
+                        'request_number' => $req->request_number,
+                        'branch_name' => $req->storeBranch?->name ?? 'N/A',
+                        'store_name' => $req->storeBranch?->store?->name ?? 'N/A',
+                        'requested_balance_limit' => (float) $req->requested_balance_limit,
+                        'status' => $req->status,
+                        'employee_comment' => $req->employee_comment,
+                        'employee_reviewed_by' => $req->employeeReviewer?->name,
+                        'employee_reviewed_at' => $req->employee_reviewed_at?->format('Y-m-d H:i:s'),
+                        'created_at' => $req->created_at?->format('Y-m-d H:i:s'),
+                    ];
+                });
+
+            return response()->json($requests);
+        } catch (\Exception $e) {
+            \Log::error('Manager review requests error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to fetch manager review requests',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Manager approve a balance request (second level approval)
+     */
+    public function managerApprove(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'comment' => 'required|string|min:3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $balanceRequest = BranchBalanceRequest::where('status', 'employee_review')->findOrFail($id);
+
+        $balanceRequest->update([
+            'status' => 'manager_review',
+            'manager_status' => 'approved',
+            'manager_comment' => $request->comment,
+            'manager_reviewed_by' => auth()->id(),
+            'manager_reviewed_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Balance request approved by manager. Moving to partner review.',
+            'data' => $balanceRequest,
+        ]);
+    }
+
+    /**
+     * Manager reject a balance request (second level rejection)
+     */
+    public function managerReject(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'comment' => 'required|string|min:3',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $balanceRequest = BranchBalanceRequest::where('status', 'employee_review')->findOrFail($id);
+
+        $balanceRequest->update([
+            'status' => 'rejected',
+            'manager_status' => 'rejected',
+            'manager_comment' => $request->comment,
+            'manager_reviewed_by' => auth()->id(),
+            'manager_reviewed_at' => now(),
+            'rejection_reason' => $request->comment,
+        ]);
+
+        return response()->json([
+            'message' => 'Balance request rejected by manager',
+            'data' => $balanceRequest,
+        ]);
+    }
 }

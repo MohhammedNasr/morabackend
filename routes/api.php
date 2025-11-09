@@ -81,10 +81,25 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update']);
                 Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy']);
                 
-                // Balance Requests
+                // Balance Requests - Employee Level
                 Route::get('/balance-requests', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'index']);
                 Route::get('/balance-requests/pending-count', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'pendingCount']);
                 Route::get('/balance-requests/{id}', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'show']);
+                Route::post('/balance-requests/{id}/employee-approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'employeeApprove']);
+                Route::post('/balance-requests/{id}/employee-reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'employeeReject']);
+                
+                // Balance Requests - Manager Level
+                Route::get('/balance-requests/manager/review', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'managerIndex']);
+                Route::post('/balance-requests/{id}/manager-approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'managerApprove']);
+                Route::post('/balance-requests/{id}/manager-reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'managerReject']);
+                
+                // Balance Requests - Partner Level
+                Route::get('/partner/balance-requests', [\App\Http\Controllers\Partner\BalanceRequestController::class, 'index']);
+                Route::get('/partner/balance-requests/{id}', [\App\Http\Controllers\Partner\BalanceRequestController::class, 'show']);
+                Route::post('/partner/balance-requests/{id}/approve', [\App\Http\Controllers\Partner\BalanceRequestController::class, 'approve']);
+                Route::post('/partner/balance-requests/{id}/reject', [\App\Http\Controllers\Partner\BalanceRequestController::class, 'reject']);
+                
+                // Legacy approve/reject endpoints (keep for backward compatibility)
                 Route::post('/balance-requests/{id}/approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'approve']);
                 Route::post('/balance-requests/{id}/reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'reject']);
                 

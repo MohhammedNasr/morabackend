@@ -13,6 +13,7 @@ class BranchBalanceRequest extends Model
     protected $fillable = [
         'store_branch_id',
         'store_id',
+        'request_number',
         'requested_balance_limit',
         'business_type',
         'years_in_business',
@@ -35,6 +36,21 @@ class BranchBalanceRequest extends Model
         'approved_balance_limit',
         'reviewed_by',
         'reviewed_at',
+        // Employee approval
+        'employee_status',
+        'employee_comment',
+        'employee_reviewed_by',
+        'employee_reviewed_at',
+        // Manager approval
+        'manager_status',
+        'manager_comment',
+        'manager_reviewed_by',
+        'manager_reviewed_at',
+        // Partner approval
+        'partner_status',
+        'partner_comment',
+        'partner_reviewed_by',
+        'partner_reviewed_at',
     ];
 
     protected $casts = [
@@ -43,7 +59,36 @@ class BranchBalanceRequest extends Model
         'approved_balance_limit' => 'decimal:2',
         'documents' => 'array',
         'reviewed_at' => 'datetime',
+        'employee_reviewed_at' => 'datetime',
+        'manager_reviewed_at' => 'datetime',
+        'partner_reviewed_at' => 'datetime',
     ];
+
+    /**
+     * Boot the model and generate request number
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->request_number)) {
+                $model->request_number = static::generateRequestNumber();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique request number
+     */
+    protected static function generateRequestNumber(): string
+    {
+        do {
+            $number = 'REQ' . str_pad(rand(1, 9999999), 7, '0', STR_PAD_LEFT);
+        } while (static::where('request_number', $number)->exists());
+
+        return $number;
+    }
 
     public function storeBranch()
     {
@@ -60,9 +105,39 @@ class BranchBalanceRequest extends Model
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
+    public function employeeReviewer()
+    {
+        return $this->belongsTo(User::class, 'employee_reviewed_by');
+    }
+
+    public function managerReviewer()
+    {
+        return $this->belongsTo(User::class, 'manager_reviewed_by');
+    }
+
+    public function partnerReviewer()
+    {
+        return $this->belongsTo(User::class, 'partner_reviewed_by');
+    }
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
+    }
+
+    public function scopeEmployeeReview($query)
+    {
+        return $query->where('status', 'employee_review');
+    }
+
+    public function scopeManagerReview($query)
+    {
+        return $query->where('status', 'manager_review');
+    }
+
+    public function scopePartnerReview($query)
+    {
+        return $query->where('status', 'partner_review');
     }
 
     public function scopeUnderReview($query)

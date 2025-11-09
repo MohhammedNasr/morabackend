@@ -181,6 +181,7 @@ class BranchBalanceRequestController extends Controller
             'message' => 'Balance request submitted successfully',
             'data' => [
                 'id' => $balanceRequest->id,
+                'request_number' => $balanceRequest->request_number,
                 'status' => $balanceRequest->status,
             ]
         ], 201);
