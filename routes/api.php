@@ -109,6 +109,11 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::post('/mora-wallet/credit', [\App\Http\Controllers\Admin\MoraWalletController::class, 'credit']);
                 Route::post('/mora-wallet/debit', [\App\Http\Controllers\Admin\MoraWalletController::class, 'debit']);
                 
+                // Finance
+                Route::get('/finance/stats', [\App\Http\Controllers\Admin\FinanceController::class, 'stats']);
+                Route::get('/finance/transactions', [\App\Http\Controllers\Admin\FinanceController::class, 'transactions']);
+                Route::get('/finance/export', [\App\Http\Controllers\Admin\FinanceController::class, 'export']);
+                
                 // Stores
                 Route::post('/stores/datatable', [\App\Http\Controllers\Admin\StoreController::class, 'datatable']);
                 Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show']);
