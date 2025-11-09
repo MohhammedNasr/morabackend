@@ -19,23 +19,34 @@ class Supplier extends Authenticatable
     protected $fillable = [
         'user_id',
         'name',
+        'business_name',
         'contact_name',
         'email',
         'phone',
         'password',
         'address',
+        'city',
+        'country',
         'commercial_record',
+        'commercial_registration',
         'tax_id',
         'bank_account',
+        'account_number',
         'iban_number',
+        'iban',
+        'bank_name',
         'id_number',
         'bank_id',
         'account_owner_name',
+        'beneficiary_name',
         'website',
         'payment_term_days',
+        'settlement_frequency',
+        'settlement_day',
         'is_active',
         'is_verified',
         'verified_at',
+        'verified_by',
         'role_id',
         'verification_code',
         'reset_password_otp',
@@ -45,6 +56,8 @@ class Supplier extends Authenticatable
         'description',
         'logo',
         'is_featured',
+        'notify_on_transaction',
+        'notify_on_settlement',
     ];
 
     protected $casts = [
@@ -122,5 +135,36 @@ class Supplier extends Authenticatable
     {
         return $this->hasMany(UserDeviceToken::class, 'user_id')
             ->where('user_type', 'supplier');
+    }
+
+    /**
+     * Get all transactions for this supplier (portal feature)
+     */
+    public function supplierTransactions(): HasMany
+    {
+        return $this->hasMany(SupplierTransaction::class);
+    }
+
+    /**
+     * Get all settlements for this supplier (portal feature)
+     */
+    public function settlements(): HasMany
+    {
+        return $this->hasMany(SupplierSettlement::class);
+    }
+
+    /**
+     * Get stores that have purchased from this supplier
+     */
+    public function customerStores()
+    {
+        return $this->hasManyThrough(
+            Store::class,
+            SupplierTransaction::class,
+            'supplier_id',
+            'id',
+            'id',
+            'store_id'
+        )->distinct();
     }
 }

@@ -297,4 +297,40 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
         // Notification Testing
         Route::post('test-notification', [\App\Http\Controllers\API\NotificationTestController::class, 'sendTestNotification']);
     });
+
+    // ===========================================
+    // SUPPLIER PORTAL ROUTES
+    // ===========================================
+    
+    // Supplier Auth (Public)
+    Route::prefix('supplier')->group(function () {
+        Route::post('/login', [\App\Http\Controllers\Supplier\AuthController::class, 'login']);
+        Route::post('/register', [\App\Http\Controllers\Supplier\AuthController::class, 'register']);
+    });
+
+    // Supplier Portal (Protected)
+    Route::prefix('supplier')->middleware('auth:sanctum')->group(function () {
+        // Auth
+        Route::get('/me', [\App\Http\Controllers\Supplier\AuthController::class, 'me']);
+        Route::post('/logout', [\App\Http\Controllers\Supplier\AuthController::class, 'logout']);
+        
+        // Dashboard
+        Route::get('/dashboard/stats', [\App\Http\Controllers\Supplier\DashboardController::class, 'stats']);
+        
+        // Transactions
+        Route::get('/transactions', [\App\Http\Controllers\Supplier\TransactionController::class, 'index']);
+        Route::get('/transactions/{id}', [\App\Http\Controllers\Supplier\TransactionController::class, 'show']);
+        
+        // Customers (Business Stores)
+        Route::get('/customers', [\App\Http\Controllers\Supplier\CustomerController::class, 'index']);
+        Route::get('/customers/{storeId}', [\App\Http\Controllers\Supplier\CustomerController::class, 'show']);
+        
+        // Settlements
+        Route::get('/settlements', [\App\Http\Controllers\Supplier\SettlementController::class, 'index']);
+        Route::get('/settlements/{id}', [\App\Http\Controllers\Supplier\SettlementController::class, 'show']);
+        
+        // Profile
+        Route::put('/profile', [\App\Http\Controllers\Supplier\ProfileController::class, 'updateProfile']);
+        Route::post('/profile/change-password', [\App\Http\Controllers\Supplier\ProfileController::class, 'changePassword']);
+    });
 });

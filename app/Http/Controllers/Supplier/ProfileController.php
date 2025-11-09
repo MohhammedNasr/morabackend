@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
@@ -64,5 +65,115 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'Profile updated successfully.');
+    }
+
+    /**
+     * Update supplier profile (API)
+     */
+    public function updateProfile(Request $request)
+    {
+        $supplier = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'business_name' => 'sometimes|string|max:255',
+            'contact_name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string',
+            'address' => 'sometimes|string',
+            'city' => 'sometimes|string',
+            'country' => 'sometimes|string',
+            'bank_name' => 'sometimes|string',
+            'account_number' => 'sometimes|string',
+            'iban' => 'sometimes|string',
+            'beneficiary_name' => 'sometimes|string',
+            'settlement_frequency' => 'sometimes|in:weekly,bi-weekly,monthly',
+            'notify_on_transaction' => 'sometimes|boolean',
+            'notify_on_settlement' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $supplier->update($request->only([
+                'business_name',
+                'contact_name',
+                'phone',
+                'address',
+                'city',
+                'country',
+                'bank_name',
+                'account_number',
+                'iban',
+                'beneficiary_name',
+                'settlement_frequency',
+                'notify_on_transaction',
+                'notify_on_settlement',
+            ]));
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'supplier' => [
+                    'id' => $supplier->id,
+                    'business_name' => $supplier->business_name,
+                    'contact_name' => $supplier->contact_name,
+                    'email' => $supplier->email,
+                    'phone' => $supplier->phone,
+                    'address' => $supplier->address,
+                    'city' => $supplier->city,
+                    'country' => $supplier->country,
+                    'bank_name' => $supplier->bank_name,
+                    'account_number' => $supplier->account_number,
+                    'iban' => $supplier->iban,
+                    'beneficiary_name' => $supplier->beneficiary_name,
+                    'settlement_frequency' => $supplier->settlement_frequency,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Supplier profile update error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to update profile',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Change password (API)
+     */
+    public function changePassword(Request $request)
+    {
+        $supplier = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if (!Hash::check($request->current_password, $supplier->password)) {
+            return response()->json([
+                'error' => 'Current password is incorrect'
+            ], 422);
+        }
+
+        try {
+            $supplier->update([
+                'password' => Hash::make($request->new_password),
+            ]);
+
+            return response()->json([
+                'message' => 'Password changed successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Supplier password change error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to change password',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

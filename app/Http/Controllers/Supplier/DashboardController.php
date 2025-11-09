@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SubOrder;
+use App\Models\SupplierTransaction;
+use App\Models\SupplierSettlement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -129,5 +131,90 @@ class DashboardController extends Controller
         ]);
 
         return view('supplier.dashboard', $data);
+    }
+
+    /**
+     * Get supplier portal dashboard statistics (API)
+     */
+    public function stats(Request $request)
+    {
+        $supplier = $request->user();
+
+        try {
+            // Total sales via Mora
+            $totalSales = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->sum('amount');
+
+            $salesThisMonth = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->whereMonth('transaction_date', now()->month)
+                ->whereYear('transaction_date', now()->year)
+                ->sum('amount');
+
+            // Pending settlements
+            $pendingSettlement = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->where('status', SupplierTransaction::STATUS_PENDING_SETTLEMENT)
+                ->sum('amount');
+
+            // Active business customers
+            $activeCustomers = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->distinct('store_id')
+                ->count('store_id');
+
+            // Recent transactions
+            $recentTransactions = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->with('store:id,name')
+                ->orderBy('transaction_date', 'desc')
+                ->take(10)
+                ->get()
+                ->map(function($txn) {
+                    return [
+                        'id' => $txn->id,
+                        'reference' => $txn->transaction_reference,
+                        'store_name' => $txn->store?->name,
+                        'amount' => (float) $txn->amount,
+                        'status' => $txn->status,
+                        'date' => $txn->transaction_date->format('Y-m-d H:i:s'),
+                    ];
+                });
+
+            // Total transactions count
+            $totalTransactions = SupplierTransaction::where('supplier_id', $supplier->id)->count();
+            $transactionsThisMonth = SupplierTransaction::where('supplier_id', $supplier->id)
+                ->whereMonth('transaction_date', now()->month)
+                ->whereYear('transaction_date', now()->year)
+                ->count();
+
+            // Top purchasing business
+            $topCustomer = SupplierTransaction::select('store_id', DB::raw('SUM(amount) as total'))
+                ->where('supplier_id', $supplier->id)
+                ->groupBy('store_id')
+                ->orderByDesc('total')
+                ->with('store:id,name')
+                ->first();
+
+            // Average order value
+            $avgOrderValue = $totalTransactions > 0 ? $totalSales / $totalTransactions : 0;
+
+            return response()->json([
+                'total_sales' => (float) $totalSales,
+                'sales_this_month' => (float) $salesThisMonth,
+                'pending_settlement' => (float) $pendingSettlement,
+                'active_customers' => $activeCustomers,
+                'total_transactions' => $totalTransactions,
+                'transactions_this_month' => $transactionsThisMonth,
+                'average_order_value' => (float) $avgOrderValue,
+                'top_customer' => $topCustomer ? [
+                    'name' => $topCustomer->store?->name,
+                    'total' => (float) $topCustomer->total,
+                ] : null,
+                'recent_transactions' => $recentTransactions,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Supplier dashboard stats error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to fetch dashboard statistics',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
