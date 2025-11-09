@@ -193,4 +193,51 @@ class StorePaymentRequestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get payment history for authenticated store
+     */
+    public function history(Request $request)
+    {
+        try {
+            // Get authenticated user's store
+            $user = auth()->user();
+            $store = $user->store;
+
+            if (!$store) {
+                return response()->json([
+                    'error' => 'Store not found'
+                ], 404);
+            }
+
+            // Get supplier transactions for this store
+            $transactions = SupplierTransaction::with('supplier:id,name,business_name')
+                ->where('store_id', $store->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(50)
+                ->get()
+                ->map(function ($txn) {
+                    return [
+                        'id' => $txn->id,
+                        'supplier_name' => $txn->supplier->business_name ?? $txn->supplier->name,
+                        'amount' => (float) $txn->amount,
+                        'description' => $txn->description,
+                        'status' => $txn->status,
+                        'transaction_reference' => $txn->transaction_reference,
+                        'paid_at' => $txn->created_at->toIso8601String(),
+                        'created_at' => $txn->created_at->toIso8601String(),
+                    ];
+                });
+
+            return response()->json([
+                'transactions' => $transactions,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Payment history error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to fetch payment history',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

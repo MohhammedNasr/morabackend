@@ -254,6 +254,9 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::post('/pay', [\App\Http\Controllers\API\StorePaymentRequestController::class, 'pay']);
             });
 
+            // Supplier Payments History
+            Route::get('/supplier-payments/history', [\App\Http\Controllers\API\StorePaymentRequestController::class, 'history']);
+
             // Order Payments
             Route::prefix('order-payments')->group(function () {
                 Route::post('/{orderPayment}/pay', [\App\Http\Controllers\API\OrderPaymentController::class, 'pay']);
