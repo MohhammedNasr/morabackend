@@ -27,7 +27,10 @@ class PaymentService
                 ];
 
                 if (empty($hyperpayConfig['access_token']) || empty($hyperpayConfig['entity_id'])) {
-                    throw new \RuntimeException(__('api.config_incomplete', ['provider' => 'HyperPay']));
+                    // Log warning instead of throwing exception
+                    \Log::warning('HyperPay configuration is incomplete. Skipping HyperPay provider.');
+                    // Set a dummy provider or return early
+                    return $this;
                 }
 
                 $this->provider = new HyperPayProvider($hyperpayConfig, config('app.env') !== 'production');
@@ -43,7 +46,8 @@ class PaymentService
                 ];
 
                 if (empty($tapConfig['secret_key']) || empty($tapConfig['merchant_id'])) {
-                    throw new \RuntimeException(__('api.config_incomplete', ['provider' => 'Tap']));
+                    \Log::warning('Tap configuration is incomplete. Skipping Tap provider.');
+                    return $this;
                 }
 
                 $this->provider = new \App\Services\Payment\Providers\TapProvider($tapConfig, config('app.env') !== 'production');
