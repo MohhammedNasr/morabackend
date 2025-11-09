@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Partner;
 
 use App\Http\Controllers\Controller;
 use App\Models\BranchBalanceRequest;
+use App\Models\MoraWallet;
+use App\Models\MoraWalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class BalanceRequestController extends Controller
 {
@@ -146,27 +149,63 @@ class BalanceRequestController extends Controller
 
         $balanceRequest = BranchBalanceRequest::where('status', 'manager_review')->findOrFail($id);
 
-        $balanceRequest->update([
-            'status' => 'approved',
-            'partner_status' => 'approved',
-            'partner_comment' => $request->comment,
-            'partner_reviewed_by' => auth()->id(),
-            'partner_reviewed_at' => now(),
-            'approved_balance_limit' => $request->approved_balance_limit,
-            'reviewed_by' => auth()->id(),
-            'reviewed_at' => now(),
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Update the branch's balance limit
-        $balanceRequest->storeBranch()->update([
-            'balance_limit' => $request->approved_balance_limit,
-            'is_active' => true,
-        ]);
+            // Update balance request
+            $balanceRequest->update([
+                'status' => 'approved',
+                'partner_status' => 'approved',
+                'partner_comment' => $request->comment,
+                'partner_reviewed_by' => auth()->id(),
+                'partner_reviewed_at' => now(),
+                'approved_balance_limit' => $request->approved_balance_limit,
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
 
-        return response()->json([
-            'message' => 'Balance request approved successfully by partner. Branch balance limit updated.',
-            'data' => $balanceRequest,
-        ]);
+            // Update the branch's balance limit
+            $balanceRequest->storeBranch()->update([
+                'balance_limit' => $request->approved_balance_limit,
+                'is_active' => true,
+            ]);
+
+            // Debit from Mora wallet
+            $moraWallet = MoraWallet::getInstance();
+            $transaction = $moraWallet->debit(
+                amount: $request->approved_balance_limit,
+                transactionType: MoraWalletTransaction::TRANSACTION_TYPE_BALANCE_APPROVAL,
+                description: "Balance request {$balanceRequest->request_number} approved for {$balanceRequest->storeBranch?->name}",
+                balanceRequest: $balanceRequest,
+                initiatedBy: auth()->user(),
+                metadata: [
+                    'balance_request_id' => $balanceRequest->id,
+                    'request_number' => $balanceRequest->request_number,
+                    'branch_id' => $balanceRequest->store_branch_id,
+                    'branch_name' => $balanceRequest->storeBranch?->name,
+                    'approved_by' => auth()->user()->name,
+                ]
+            );
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Balance request approved successfully by partner. Branch balance limit updated and amount debited from Mora wallet.',
+                'data' => $balanceRequest,
+                'mora_transaction' => [
+                    'reference_number' => $transaction->reference_number,
+                    'amount' => (float) $transaction->amount,
+                    'mora_balance_after' => (float) $transaction->balance_after,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Partner approval error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to approve balance request',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

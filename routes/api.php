@@ -103,6 +103,12 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::post('/balance-requests/{id}/approve', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'approve']);
                 Route::post('/balance-requests/{id}/reject', [\App\Http\Controllers\Admin\BranchBalanceRequestController::class, 'reject']);
                 
+                // Mora Wallet
+                Route::get('/mora-wallet', [\App\Http\Controllers\Admin\MoraWalletController::class, 'index']);
+                Route::get('/mora-wallet/transactions', [\App\Http\Controllers\Admin\MoraWalletController::class, 'transactions']);
+                Route::post('/mora-wallet/credit', [\App\Http\Controllers\Admin\MoraWalletController::class, 'credit']);
+                Route::post('/mora-wallet/debit', [\App\Http\Controllers\Admin\MoraWalletController::class, 'debit']);
+                
                 // Stores
                 Route::post('/stores/datatable', [\App\Http\Controllers\Admin\StoreController::class, 'datatable']);
                 Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show']);
