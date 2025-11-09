@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\SupplierPaymentRequest;
 use App\Models\SupplierTransaction;
 use App\Models\Store;
-use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -106,8 +105,8 @@ class StorePaymentRequestController extends Controller
             $code = $request->code;
             $storeId = $request->store_id;
 
-            // Get the store
-            $store = Store::with('wallet')->findOrFail($storeId);
+            // Get the store with branches
+            $store = Store::with('branches')->findOrFail($storeId);
 
             // Get payment request
             $paymentRequest = SupplierPaymentRequest::where('request_code', $code)
@@ -128,33 +127,31 @@ class StorePaymentRequestController extends Controller
                 ], 400);
             }
 
-            // Check store wallet balance
-            if (!$store->wallet) {
-                DB::rollBack();
-                return response()->json(['error' => 'Store wallet not found'], 404);
-            }
+            // Calculate total available balance from active branches
+            $totalAvailableBalance = $store->branches()
+                ->where('is_active', true)
+                ->sum('balance_limit');
 
-            if ($store->wallet->balance < $paymentRequest->amount) {
+            if ($totalAvailableBalance < $paymentRequest->amount) {
                 DB::rollBack();
                 return response()->json([
                     'error' => 'Insufficient balance',
                     'required' => (float) $paymentRequest->amount,
-                    'available' => (float) $store->wallet->balance,
+                    'available' => (float) $totalAvailableBalance,
                 ], 400);
             }
 
-            // Deduct from store wallet
-            $store->wallet->decrement('balance', $paymentRequest->amount);
-
-            // Create wallet transaction for store
-            WalletTransaction::create([
-                'wallet_id' => $store->wallet->id,
-                'type' => 'debit',
-                'amount' => $paymentRequest->amount,
-                'balance_before' => $store->wallet->balance + $paymentRequest->amount,
-                'balance_after' => $store->wallet->balance,
-                'description' => "Payment to supplier: {$paymentRequest->supplier->name} (Code: {$code})",
-            ]);
+            // Deduct from branch balance limits (proportionally from active branches)
+            $activeBranches = $store->branches()->where('is_active', true)->where('balance_limit', '>', 0)->get();
+            $remainingAmount = $paymentRequest->amount;
+            
+            foreach ($activeBranches as $branch) {
+                if ($remainingAmount <= 0) break;
+                
+                $deductAmount = min($branch->balance_limit, $remainingAmount);
+                $branch->decrement('balance_limit', $deductAmount);
+                $remainingAmount -= $deductAmount;
+            }
 
             // Create supplier transaction
             $supplierTransaction = SupplierTransaction::create([
@@ -172,6 +169,11 @@ class StorePaymentRequestController extends Controller
 
             DB::commit();
 
+            // Calculate new total balance after payment
+            $newTotalBalance = $store->branches()
+                ->where('is_active', true)
+                ->sum('balance_limit');
+
             return response()->json([
                 'message' => 'Payment successful',
                 'payment' => [
@@ -179,7 +181,7 @@ class StorePaymentRequestController extends Controller
                     'amount' => (float) $paymentRequest->amount,
                     'supplier_name' => $paymentRequest->supplier->business_name ?? $paymentRequest->supplier->name,
                     'paid_at' => $paymentRequest->paid_at->toIso8601String(),
-                    'remaining_balance' => (float) $store->wallet->fresh()->balance,
+                    'remaining_balance' => (float) $newTotalBalance,
                 ],
             ]);
         } catch (\Exception $e) {
