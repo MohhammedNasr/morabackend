@@ -80,7 +80,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
-            'commercial_registration' => $request->commercial_registration,
+            'commercial_record' => $request->commercial_registration, // Database uses commercial_record
             'tax_id' => $request->tax_id,
             'is_active' => false, // Requires admin approval
             'is_verified' => false,
