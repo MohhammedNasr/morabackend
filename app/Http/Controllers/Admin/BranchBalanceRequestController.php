@@ -24,18 +24,23 @@ class BranchBalanceRequestController extends Controller
         try {
             \Log::info('Balance requests endpoint called by user: ' . auth()->id());
             
-            $requests = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
+            $requests = BranchBalanceRequest::with(['storeBranch.store', 'reviewer', 'employeeReviewer'])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function($req) {
                     return [
                         'id' => $req->id,
+                        'request_number' => $req->request_number,
                         'branch_name' => $req->storeBranch?->name ?? 'N/A',
                         'store_name' => $req->storeBranch?->store?->name ?? 'N/A',
                         'requested_balance_limit' => (float) $req->requested_balance_limit,
                         'status' => $req->status,
                         'approved_balance_limit' => $req->approved_balance_limit ? (float) $req->approved_balance_limit : null,
                         'rejection_reason' => $req->rejection_reason,
+                        'employee_comment' => $req->employee_comment,
+                        'employee_status' => $req->employee_status,
+                        'employee_reviewed_by' => $req->employeeReviewer?->name,
+                        'employee_reviewed_at' => $req->employee_reviewed_at?->format('Y-m-d H:i:s'),
                         'created_at' => $req->created_at?->format('Y-m-d H:i:s'),
                         'reviewed_at' => $req->reviewed_at?->format('Y-m-d H:i:s'),
                     ];
@@ -62,11 +67,12 @@ class BranchBalanceRequestController extends Controller
     public function show($id)
     {
         try {
-            $request = BranchBalanceRequest::with(['storeBranch.store', 'reviewer'])
+            $request = BranchBalanceRequest::with(['storeBranch.store', 'reviewer', 'employeeReviewer'])
                 ->findOrFail($id);
 
             return response()->json([
                 'id' => $request->id,
+                'request_number' => $request->request_number,
                 'branch' => [
                     'id' => $request->storeBranch?->id ?? null,
                     'name' => $request->storeBranch?->name ?? 'N/A',
@@ -97,6 +103,10 @@ class BranchBalanceRequestController extends Controller
                 'approved_balance_limit' => $request->approved_balance_limit ? (float) $request->approved_balance_limit : null,
                 'reviewed_by' => $request->reviewer ? $request->reviewer->name : null,
                 'reviewed_at' => $request->reviewed_at?->format('Y-m-d H:i:s'),
+                'employee_status' => $request->employee_status,
+                'employee_comment' => $request->employee_comment,
+                'employee_reviewed_by' => $request->employeeReviewer?->name,
+                'employee_reviewed_at' => $request->employee_reviewed_at?->format('Y-m-d H:i:s'),
                 'created_at' => $request->created_at?->format('Y-m-d H:i:s'),
             ]);
         } catch (\Exception $e) {
