@@ -243,6 +243,12 @@ Route::middleware(SetLocaleMiddleware::class)->group(function () {
                 Route::get('/transactions', [\App\Http\Controllers\API\WalletController::class, 'getWalletTransactions']);
             });
 
+            // Supplier Payment Requests (QR Code Payments)
+            Route::prefix('payment-requests')->group(function () {
+                Route::post('/verify', [\App\Http\Controllers\API\StorePaymentRequestController::class, 'verify']);
+                Route::post('/pay', [\App\Http\Controllers\API\StorePaymentRequestController::class, 'pay']);
+            });
+
             // Order Payments
             Route::prefix('order-payments')->group(function () {
                 Route::post('/{orderPayment}/pay', [\App\Http\Controllers\API\OrderPaymentController::class, 'pay']);
