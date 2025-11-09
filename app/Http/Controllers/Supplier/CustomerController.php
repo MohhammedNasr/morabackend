@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Supplier;
 
 use App\Http\Controllers\Controller;
+use App\Models\Store;
 use App\Models\SupplierTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,36 +21,63 @@ class CustomerController extends Controller
             $perPage = $request->get('per_page', 20);
             $search = $request->get('search');
 
-            $query = SupplierTransaction::select(
+            // First get the aggregated data
+            $aggregatedQuery = DB::table('supplier_transactions')
+                ->select(
                     'store_id',
                     DB::raw('COUNT(*) as transaction_count'),
                     DB::raw('SUM(amount) as total_purchases'),
                     DB::raw('MAX(transaction_date) as last_purchase_date')
                 )
                 ->where('supplier_id', $supplier->id)
-                ->with('store:id,name,phone,email,is_active')
                 ->groupBy('store_id');
 
             if ($search) {
-                $query->whereHas('store', function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
+                $aggregatedQuery->join('stores', 'supplier_transactions.store_id', '=', 'stores.id')
+                    ->where('stores.name', 'like', "%{$search}%");
             }
 
-            $customers = $query->paginate($perPage);
+            // Get paginated results
+            $perPage = $request->get('per_page', 20);
+            $page = $request->get('page', 1);
+            $offset = ($page - 1) * $perPage;
+            
+            $total = DB::table(DB::raw("({$aggregatedQuery->toSql()}) as sub"))
+                ->mergeBindings($aggregatedQuery)
+                ->count();
+            
+            $results = $aggregatedQuery->offset($offset)->limit($perPage)->get();
+            
+            // Load store details
+            $storeIds = $results->pluck('store_id')->toArray();
+            $stores = Store::whereIn('id', $storeIds)
+                ->select('id', 'name', 'phone', 'email', 'is_active')
+                ->get()
+                ->keyBy('id');
 
-            $customers->getCollection()->transform(function($customer) {
+            // Transform results
+            $data = $results->map(function($customer) use ($stores) {
+                $store = $stores->get($customer->store_id);
                 return [
                     'store_id' => $customer->store_id,
-                    'business_name' => $customer->store?->name,
-                    'phone' => $customer->store?->phone,
-                    'email' => $customer->store?->email,
+                    'business_name' => $store?->name,
+                    'phone' => $store?->phone,
+                    'email' => $store?->email,
                     'total_purchases' => (float) $customer->total_purchases,
                     'transaction_count' => $customer->transaction_count,
                     'last_purchase_date' => $customer->last_purchase_date,
-                    'is_active' => $customer->store?->is_active,
+                    'is_active' => $store?->is_active,
                 ];
             });
+
+            // Create manual pagination response
+            $customers = new \Illuminate\Pagination\LengthAwarePaginator(
+                $data,
+                $total,
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
 
             return response()->json($customers);
         } catch (\Exception $e) {
