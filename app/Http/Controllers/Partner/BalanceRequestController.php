@@ -24,6 +24,17 @@ class BalanceRequestController extends Controller
                 ->orderBy('manager_reviewed_at', 'desc')
                 ->get()
                 ->map(function($req) {
+                    // Debug logging
+                    \Log::info('Partner request details', [
+                        'id' => $req->id,
+                        'store_branch_id' => $req->store_branch_id,
+                        'store_id' => $req->store_id,
+                        'has_branch' => $req->storeBranch ? 'yes' : 'no',
+                        'branch_name' => $req->storeBranch?->name,
+                        'has_store' => $req->storeBranch?->store ? 'yes' : 'no',
+                        'store_name' => $req->storeBranch?->store?->name,
+                    ]);
+                    
                     return [
                         'id' => $req->id,
                         'request_number' => $req->request_number,
