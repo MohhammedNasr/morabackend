@@ -32,18 +32,45 @@ class BranchBalanceRequestController extends Controller
         $user = auth()->guard('sanctum')->user() ?? auth()->guard('web')->user();
         $storeId = $user->store->id;
         
-        $requests = BranchBalanceRequest::with(['storeBranch', 'reviewer'])
+        $requests = BranchBalanceRequest::with([
+            'storeBranch.store',
+            'reviewer',
+            'employeeReviewer',
+            'managerReviewer',
+            'partnerReviewer'
+        ])
             ->where('store_id', $storeId)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($req) {
                 return [
                     'id' => $req->id,
+                    'request_number' => $req->request_number,
                     'branch_name' => $req->storeBranch->name,
+                    'store_name' => $req->storeBranch?->store?->name,
                     'requested_balance_limit' => (float) $req->requested_balance_limit,
                     'status' => $req->status,
                     'approved_balance_limit' => $req->approved_balance_limit ? (float) $req->approved_balance_limit : null,
                     'rejection_reason' => $req->rejection_reason,
+                    
+                    // Employee review details
+                    'employee_status' => $req->employee_status,
+                    'employee_comment' => $req->employee_comment,
+                    'employee_reviewed_by' => $req->employeeReviewer?->name,
+                    'employee_reviewed_at' => $req->employee_reviewed_at?->format('Y-m-d H:i:s'),
+                    
+                    // Manager review details
+                    'manager_status' => $req->manager_status,
+                    'manager_comment' => $req->manager_comment,
+                    'manager_reviewed_by' => $req->managerReviewer?->name,
+                    'manager_reviewed_at' => $req->manager_reviewed_at?->format('Y-m-d H:i:s'),
+                    
+                    // Partner review details
+                    'partner_status' => $req->partner_status,
+                    'partner_comment' => $req->partner_comment,
+                    'partner_reviewed_by' => $req->partnerReviewer?->name,
+                    'partner_reviewed_at' => $req->partner_reviewed_at?->format('Y-m-d H:i:s'),
+                    
                     'created_at' => $req->created_at?->format('Y-m-d H:i:s'),
                     'reviewed_at' => $req->reviewed_at?->format('Y-m-d H:i:s'),
                 ];
